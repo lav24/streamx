@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: video-service
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/streamx
+    username: streamx
+    password: streamx
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 3000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+    consumer:
+      group-id: video-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.streamx.video.event
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.streamx.video.event.VideoTranscodeCompletedEvent
+
+streamx:
+  s3:
+    endpoint: http://minio:9000
+    public-endpoint: http://localhost:9000
+    access-key: streamx
+    secret-key: streamx123
+    bucket: streamx-video
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus

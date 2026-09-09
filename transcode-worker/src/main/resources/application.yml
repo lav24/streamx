@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: transcode-worker
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: transcode-worker
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.streamx.transcode.event
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.streamx.transcode.event.VideoUploadCompletedEvent
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+
+streamx:
+  s3:
+    endpoint: http://minio:9000
+    access-key: streamx
+    secret-key: streamx123
+    bucket: streamx-video
+  transcode:
+    resolutions:
+      - name: "480p"
+        width: 854
+        height: 480
+        bitrate-kbps: 1400
+      - name: "720p"
+        width: 1280
+        height: 720
+        bitrate-kbps: 2800
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+
+server:
+  port: 8084
