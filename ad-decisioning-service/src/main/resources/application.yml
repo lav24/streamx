@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: ad-decisioning-service
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: ad-decisioning-service-${random.uuid}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.streamx.addecisioning.event
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.streamx.addecisioning.event.CampaignUpdatedEvent
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+
+server:
+  port: 8086
