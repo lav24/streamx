@@ -9,6 +9,7 @@ public record CreateCampaignRequest(
         String name,
         BigDecimal budgetTotal,
         BigDecimal budgetDaily,
+        BigDecimal cpm,
         LocalDate startDate,
         LocalDate endDate) {
 }

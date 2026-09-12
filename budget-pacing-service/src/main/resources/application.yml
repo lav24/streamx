@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: budget-pacing-service
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/ad_pacing
+    username: streamx
+    password: streamx
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 3000
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+  kafka:
+    bootstrap-servers: kafka:9092
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+
+server:
+  port: 8088

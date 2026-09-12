@@ -38,6 +38,7 @@ public class CampaignService {
                 .name(request.name())
                 .budgetTotal(request.budgetTotal())
                 .budgetDaily(request.budgetDaily())
+                .cpm(request.cpm())
                 .startDate(request.startDate())
                 .endDate(request.endDate())
                 .build();
@@ -71,6 +72,17 @@ public class CampaignService {
         creativeRepository.save(creative);
         publishCampaignUpdated(campaignId);
         return CreativeResponse.from(creative);
+    }
+
+    @Transactional
+    public CampaignResponse updateBudget(UUID campaignId, UpdateBudgetRequest request) {
+        AdCampaign campaign = getCampaignOrThrow(campaignId);
+        campaign.setBudgetTotal(request.budgetTotal());
+        campaign.setBudgetDaily(request.budgetDaily());
+        campaign.setCpm(request.cpm());
+        campaignRepository.save(campaign);
+        publishCampaignUpdated(campaignId);
+        return CampaignResponse.from(campaign);
     }
 
     @Transactional
@@ -120,6 +132,9 @@ public class CampaignService {
         CampaignUpdatedEvent event = new CampaignUpdatedEvent(
                 campaignId,
                 campaign.getStatus().name(),
+                campaign.getBudgetTotal(),
+                campaign.getBudgetDaily(),
+                campaign.getCpm(),
                 campaign.getStartDate(),
                 campaign.getEndDate(),
                 rules,

@@ -115,6 +115,39 @@ services:
         condition: service_healthy
     networks: [streamx-net]
 
+  ad-tracking-service:
+    build: ./ad-tracking-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks: [streamx-net]
+
+  redis:
+    image: redis:7.4.11
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [streamx-net]
+
+  budget-pacing-service:
+    build: ./budget-pacing-service
+    ports:
+      - "8088:8088"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [streamx-net]
+
 networks:
   streamx-net:
 

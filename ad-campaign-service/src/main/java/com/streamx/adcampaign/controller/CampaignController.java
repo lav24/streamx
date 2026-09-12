@@ -37,6 +37,12 @@ public class CampaignController {
         return campaignService.addCreative(campaignId, request);
     }
 
+    @PatchMapping("/{campaignId}/budget")
+    public CampaignResponse updateBudget(
+            @PathVariable UUID campaignId, @RequestBody UpdateBudgetRequest request) {
+        return campaignService.updateBudget(campaignId, request);
+    }
+
     @PostMapping("/{campaignId}/activate")
     public CampaignResponse activateCampaign(@PathVariable UUID campaignId) {
         return campaignService.activateCampaign(campaignId);

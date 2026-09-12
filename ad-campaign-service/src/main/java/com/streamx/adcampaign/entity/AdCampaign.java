@@ -37,6 +37,8 @@ public class AdCampaign {
     @Column(name = "budget_daily", nullable = false)
     private BigDecimal budgetDaily;
 
+    private BigDecimal cpm;
+
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 

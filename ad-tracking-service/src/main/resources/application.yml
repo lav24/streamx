@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: ad-tracking-service
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+
+server:
+  port: 8087

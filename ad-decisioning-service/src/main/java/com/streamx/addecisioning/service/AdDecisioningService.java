@@ -6,12 +6,15 @@ import com.streamx.addecisioning.dto.DecisionResponse;
 import com.streamx.addecisioning.event.AdDecisionMadeEvent;
 import com.streamx.addecisioning.event.CampaignUpdatedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -23,6 +26,7 @@ public class AdDecisioningService {
 
     private final CampaignCache campaignCache;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     public DecisionResponse decide(DecisionRequest request) {
         if (!AD_ELIGIBLE_TIERS.contains(request.subscriptionTier())) {
@@ -32,6 +36,7 @@ public class AdDecisioningService {
         List<CampaignUpdatedEvent> matchingCampaigns = campaignCache.all().stream()
                 .filter(c -> "ACTIVE".equals(c.status()))
                 .filter(c -> matchesTargeting(c, request))
+                .filter(c -> isWithinBudget(c.campaignId()))
                 .toList();
 
         if (matchingCampaigns.isEmpty()) {
@@ -64,6 +69,34 @@ public class AdDecisioningService {
             }
         }
         return true;
+    }
+
+    private boolean isWithinBudget(UUID campaignId) {
+        List<String> keys = List.of(
+                "budget:cap:daily:" + campaignId,
+                "budget:cap:total:" + campaignId,
+                "budget:spend:daily:" + campaignId + ":" + LocalDate.now(),
+                "budget:spend:total:" + campaignId);
+
+        List<String> values = redisTemplate.opsForValue().multiGet(keys);
+
+        String dailyCapStr = values.get(0);
+        String totalCapStr = values.get(1);
+
+        if (dailyCapStr == null || totalCapStr == null) {
+            return false;
+        }
+
+        long dailySpend = parseOrZero(values.get(2));
+        long totalSpend = parseOrZero(values.get(3));
+        long dailyCap = Long.parseLong(dailyCapStr);
+        long totalCap = Long.parseLong(totalCapStr);
+
+        return dailySpend < dailyCap && totalSpend < totalCap;
+    }
+
+    private long parseOrZero(String value) {
+        return value == null ? 0L : Long.parseLong(value);
     }
 
     private String viewerValueFor(String dimension, DecisionRequest request) {
