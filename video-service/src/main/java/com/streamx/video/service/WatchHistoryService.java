@@ -6,11 +6,13 @@ import com.streamx.video.entity.User;
 import com.streamx.video.entity.Video;
 import com.streamx.video.entity.WatchHistory;
 import com.streamx.video.entity.WatchHistoryId;
+import com.streamx.video.event.PlaybackHeartbeatEvent;
 import com.streamx.video.repository.UserRepository;
 import com.streamx.video.repository.VideoRepository;
 import com.streamx.video.repository.WatchHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,9 +25,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class WatchHistoryService {
 
+    private static final String PLAYBACK_HEARTBEAT_TOPIC = "playback.heartbeat";
+
     private final WatchHistoryRepository watchHistoryRepository;
     private final UserRepository userRepository;
     private final VideoRepository videoRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @Transactional
     public void recordHeartbeat(HeartbeatRequest request) {
@@ -39,6 +44,13 @@ public class WatchHistoryService {
         watchHistory.setLastWatchedAt(Instant.now());
 
         watchHistoryRepository.save(watchHistory);
+
+        kafkaTemplate.send(
+                PLAYBACK_HEARTBEAT_TOPIC,
+                request.sessionId().toString(),
+                new PlaybackHeartbeatEvent(
+                        request.sessionId(), request.userId(), request.videoId(),
+                        request.positionSeconds(), Instant.now()));
     }
 
     private WatchHistory newWatchHistory(WatchHistoryId id, HeartbeatRequest request) {

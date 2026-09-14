@@ -148,6 +148,15 @@ services:
         condition: service_healthy
     networks: [streamx-net]
 
+  analytics-service:
+    build: ./analytics-service
+    ports:
+      - "8089:8089"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks: [streamx-net]
+
 networks:
   streamx-net:
 
