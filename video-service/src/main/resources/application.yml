@@ -40,6 +40,11 @@ streamx:
     access-key: streamx
     secret-key: streamx123
     bucket: streamx-video
+  playback:
+    mid-roll-interval-seconds: 300
+  ad-decisioning:
+    base-url: http://ad-decisioning-service:8086
+    timeout-ms: 300
 
 management:
   endpoints:

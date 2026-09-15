@@ -14,7 +14,7 @@ public class TranscodeListener {
 
     private final TranscodeService transcodeService;
 
-    @KafkaListener(topics = "video.upload.completed")
+    @KafkaListener(topics = "video.upload.completed", containerFactory = "videoUploadContainerFactory")
     public void onVideoUploaded(VideoUploadCompletedEvent event) {
         log.info("Received upload-completed event for video {}", event.videoId());
         try {

@@ -56,7 +56,7 @@ public class AdDecisioningService {
         CampaignUpdatedEvent.Creative creative = pickRandom(eligibleCreatives);
 
         DecisionResponse response = DecisionResponse.filled(
-                winner.campaignId(), creative.assetUrl(), creative.durationSeconds());
+                winner.campaignId(), creative.creativeId(), creative.durationSeconds());
 
         return finish(request, response, winner.campaignId());
     }

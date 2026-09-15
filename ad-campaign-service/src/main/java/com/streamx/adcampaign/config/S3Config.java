@@ -1,4 +1,4 @@
-package com.streamx.video.config;
+package com.streamx.adcampaign.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import java.net.URI;
 
 @Configuration
-@EnableConfigurationProperties({S3Properties.class, PlaybackProperties.class})
+@EnableConfigurationProperties(S3Properties.class)
 public class S3Config {
 
     @Bean

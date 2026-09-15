@@ -25,6 +25,11 @@ spring:
       properties:
         enable.idempotence: true
 
+streamx:
+  s3:
+    public-endpoint: http://localhost:9000
+    bucket: streamx-video
+
 management:
   endpoints:
     web:

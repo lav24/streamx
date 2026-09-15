@@ -23,6 +23,23 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         enable.idempotence: true
+    consumer:
+      group-id: ad-campaign-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.streamx.adcampaign.event
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.streamx.adcampaign.event.AdCreativeReadyEvent
+
+streamx:
+  s3:
+    endpoint: http://minio:9000
+    public-endpoint: http://localhost:9000
+    access-key: streamx
+    secret-key: streamx123
+    bucket: streamx-video
 
 management:
   endpoints:

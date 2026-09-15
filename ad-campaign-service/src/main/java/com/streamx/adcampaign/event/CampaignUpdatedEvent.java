@@ -19,6 +19,9 @@ public record CampaignUpdatedEvent(
     public record TargetingRule(String dimension, List<String> targetValues) {
     }
 
-    public record Creative(String placement, String assetUrl, int durationSeconds) {
+    public record Creative(UUID creativeId, String placement, int durationSeconds, List<Rendition> renditions) {
+    }
+
+    public record Rendition(String resolution, String hlsPlaylistKey, int bitrateKbps, int width, int height) {
     }
 }

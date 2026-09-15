@@ -19,7 +19,6 @@ import java.util.UUID;
 public class AdCreative {
 
     @Id
-    @GeneratedValue
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -30,11 +29,18 @@ public class AdCreative {
     @Column(nullable = false)
     private Placement placement;
 
-    @Column(name = "asset_url", nullable = false)
-    private String assetUrl;
-
     @Column(name = "duration_seconds", nullable = false)
     private Integer durationSeconds;
 
+    @Column(name = "s3_raw_key", nullable = false)
+    private String s3RawKey;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private Status status = Status.UPLOADING;
+
     public enum Placement { PRE_ROLL, MID_ROLL }
+
+    public enum Status { UPLOADING, PROCESSING, READY, FAILED }
 }

@@ -104,6 +104,8 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
     networks: [streamx-net]
 
   ad-decisioning-service:

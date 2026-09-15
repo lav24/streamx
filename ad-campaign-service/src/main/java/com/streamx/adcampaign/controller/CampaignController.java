@@ -30,11 +30,16 @@ public class CampaignController {
         return campaignService.addTargetingRule(campaignId, request);
     }
 
-    @PostMapping("/{campaignId}/creatives")
-    @ResponseStatus(HttpStatus.CREATED)
-    public CreativeResponse addCreative(
-            @PathVariable UUID campaignId, @RequestBody AddCreativeRequest request) {
-        return campaignService.addCreative(campaignId, request);
+    @PostMapping("/{campaignId}/creatives/init")
+    public InitCreativeResponse initCreative(
+            @PathVariable UUID campaignId, @RequestBody InitCreativeRequest request) {
+        return campaignService.initCreative(campaignId, request);
+    }
+
+    @PostMapping("/{campaignId}/creatives/{creativeId}/complete")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void completeCreative(@PathVariable UUID campaignId, @PathVariable UUID creativeId) {
+        campaignService.completeCreative(campaignId, creativeId);
     }
 
     @PatchMapping("/{campaignId}/budget")
